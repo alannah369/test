@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Southeast Michigan Nonprofits</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      background: #f5f7fa;
+      color: #1f2933;
+      margin: 0;
+      padding: 32px 16px;
+    }
+    main {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    h1 {
+      margin: 0 0 20px;
+      font-size: 1.8rem;
+    }
+    #search {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 10px 14px;
+      font-size: 1rem;
+      border: 1px solid #cbd2d9;
+      border-radius: 6px;
+      margin-bottom: 16px;
+    }
+    #search:focus {
+      outline: 2px solid #3b82f6;
+      border-color: #3b82f6;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #fff;
+      border-radius: 6px;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    }
+    th, td {
+      text-align: left;
+      padding: 12px 14px;
+      border-bottom: 1px solid #e4e7eb;
+    }
+    th {
+      background: #1e3a5f;
+      color: #fff;
+      font-weight: 600;
+    }
+    td.revenue, th.revenue {
+      text-align: right;
+    }
+    tr:last-child td {
+      border-bottom: none;
+    }
+    #no-results {
+      display: none;
+      padding: 16px;
+      color: #616e7c;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Southeast Michigan Nonprofits</h1>
+
+    <input type="text" id="search" placeholder="Search by name, city, or field...">
+
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>City</th>
+          <th>Field</th>
+          <th class="revenue">Revenue</th>
+        </tr>
+      </thead>
+      <tbody id="org-table"></tbody>
+    </table>
+    <p id="no-results">No organizations match your search.</p>
+  </main>
+
+  <script>
+    // Made-up sample organizations
+    const organizations = [
+      { name: "Riverbend Youth Arts Collective", city: "Detroit",   field: "Arts & Culture", revenue: 485000 },
+      { name: "Huron Valley Food Share",         city: "Ann Arbor", field: "Hunger Relief",  revenue: 1250000 },
+      { name: "Lakeshore Literacy Partners",     city: "Pontiac",   field: "Education",      revenue: 320000 }
+    ];
+
+    const tableBody = document.getElementById("org-table");
+    const searchBox = document.getElementById("search");
+    const noResults = document.getElementById("no-results");
+
+    function formatMoney(amount) {
+      return amount.toLocaleString("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 });
+    }
+
+    function render(list) {
+      tableBody.innerHTML = "";
+      list.forEach(org => {
+        const row = document.createElement("tr");
+        [org.name, org.city, org.field].forEach(value => {
+          const cell = document.createElement("td");
+          cell.textContent = value;
+          row.appendChild(cell);
+        });
+        const revenueCell = document.createElement("td");
+        revenueCell.className = "revenue";
+        revenueCell.textContent = formatMoney(org.revenue);
+        row.appendChild(revenueCell);
+        tableBody.appendChild(row);
+      });
+      noResults.style.display = list.length === 0 ? "block" : "none";
+    }
+
+    searchBox.addEventListener("input", () => {
+      const term = searchBox.value.trim().toLowerCase();
+      const filtered = organizations.filter(org =>
+        org.name.toLowerCase().includes(term) ||
+        org.city.toLowerCase().includes(term) ||
+        org.field.toLowerCase().includes(term)
+      );
+      render(filtered);
+    });
+
+    render(organizations);
+  </script>
+</body>
+</html>

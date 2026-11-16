@@ -57,6 +57,16 @@
     tr:last-child td {
       border-bottom: none;
     }
+    td a {
+      color: #1e3a5f;
+    }
+    .year, .source {
+      font-size: 0.8rem;
+      color: #616e7c;
+    }
+    .source {
+      margin-top: 16px;
+    }
     #no-results {
       display: none;
       padding: 16px;
@@ -82,14 +92,18 @@
       <tbody id="org-table"></tbody>
     </table>
     <p id="no-results">No organizations match your search.</p>
+    <p class="source">Revenue is total revenue from each organization's most recent IRS Form 990, from
+      <a href="https://projects.propublica.org/nonprofits/" target="_blank" rel="noopener">ProPublica Nonprofit Explorer</a>.
+      Click a name to see its filings.</p>
   </main>
 
   <script>
-    // Made-up sample organizations
+    // Real organizations. Revenue = total revenue from each one's most recent
+    // IRS Form 990 filing, via ProPublica Nonprofit Explorer.
     const organizations = [
-      { name: "Riverbend Youth Arts Collective", city: "Detroit",   field: "Arts & Culture", revenue: 485000 },
-      { name: "Huron Valley Food Share",         city: "Ann Arbor", field: "Hunger Relief",  revenue: 1250000 },
-      { name: "Lakeshore Literacy Partners",     city: "Pontiac",   field: "Education",      revenue: 320000 }
+      { name: "Gleaners Community Food Bank of Southeastern Michigan", city: "Detroit",   field: "Hunger Relief",  revenue: 94518122, year: "FY ending Sep 2023", ein: "382156255" },
+      { name: "Detroit Institute of Arts",                             city: "Detroit",   field: "Arts & Culture", revenue: 71243439, year: "FY ending Jun 2023", ein: "381359510" },
+      { name: "Food Gatherers",                                        city: "Ann Arbor", field: "Hunger Relief",  revenue: 22528904, year: "FY ending Jun 2024", ein: "382853858" }
     ];
 
     const tableBody = document.getElementById("org-table");
@@ -104,7 +118,15 @@
       tableBody.innerHTML = "";
       list.forEach(org => {
         const row = document.createElement("tr");
-        [org.name, org.city, org.field].forEach(value => {
+        const nameCell = document.createElement("td");
+        const link = document.createElement("a");
+        link.href = "https://projects.propublica.org/nonprofits/organizations/" + org.ein;
+        link.target = "_blank";
+        link.rel = "noopener";
+        link.textContent = org.name;
+        nameCell.appendChild(link);
+        row.appendChild(nameCell);
+        [org.city, org.field].forEach(value => {
           const cell = document.createElement("td");
           cell.textContent = value;
           row.appendChild(cell);
@@ -112,6 +134,10 @@
         const revenueCell = document.createElement("td");
         revenueCell.className = "revenue";
         revenueCell.textContent = formatMoney(org.revenue);
+        const yearNote = document.createElement("div");
+        yearNote.className = "year";
+        yearNote.textContent = org.year;
+        revenueCell.appendChild(yearNote);
         row.appendChild(revenueCell);
         tableBody.appendChild(row);
       });
